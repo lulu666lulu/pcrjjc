@@ -19,3 +19,6 @@ def getprofile(viewer_id: int, interval: int = 1) -> dict:
             time.sleep(interval)
         else: # notfound or else
             return "queue"
+
+def queryarena(defs: list, page: int) -> dict:
+    return json.loads(requests.get(f'{apiroot}/arena?def={",".join([str(x) for x in defs])}&page={page}').content.decode('utf8'))
