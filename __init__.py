@@ -7,6 +7,8 @@ import nonebot
 from hoshino.typing import NoticeSession
 import asyncio
 from .queryapi import getprofile
+import copy
+from threading import Lock
 
 sv_help = '''
 [竞技场绑定 uid] 绑定竞技场排名变动推送（仅下降），默认双场均启用
@@ -27,6 +29,8 @@ binds = {}
 arena_ranks = {}
 grand_arena_ranks ={}
 tr = None
+
+binds_lock=Lock()
 
 @sv.on_fullmatch('jjc帮助', only_to_me=False)
 async def send_jjchelp(bot, ev):
@@ -62,6 +66,7 @@ async def on_arena_bind(bot,ev):
         return
     uid = str(ev['user_id'])
     gid = str(ev['group_id'])
+    binds_lock.acquire()
     if not uid in binds["arena_bind"]:
         binds["arena_bind"][uid] = {"id":id,"uid":uid,"gid":gid,"arena_on":True,"grand_arena_on":True}
     else:
@@ -69,6 +74,7 @@ async def on_arena_bind(bot,ev):
         binds["arena_bind"][uid]["uid"] = uid
         binds["arena_bind"][uid]["gid"] = gid
     save_binds()
+    binds_lock.release()
     await bot.send(ev,"竞技场绑定成功",at_sender=True)
 
 @sv.on_rex(r'(竞技场查询 (.{0,15})$)|(^竞技场查询$)')
@@ -173,8 +179,10 @@ async def delete_arena_sub(bot,ev):
         if not uid in binds["arena_bind"]:
             await bot.finish(ev, "您还未绑定竞技场", at_sender=True)
         else:
+            binds_lock.acquire()
             binds["arena_bind"].pop(uid)
             save_binds()
+            binds_lock.release()
             await bot.send(ev, "删除竞技场订阅成功", at_sender=True)
     elif ev.message[0].type == 'at':
         if not priv.check_priv(ev, priv.SUPERUSER):
@@ -184,8 +192,10 @@ async def delete_arena_sub(bot,ev):
             if not uid in binds["arena_bind"]:
                 await bot.finish(ev, "对方尚未绑定竞技场", at_sender=True)
             else:
+                binds_lock.acquire()
                 binds["arena_bind"].pop(uid)
                 save_binds()
+                binds_lock.release()
                 await bot.send(ev, "删除竞技场订阅成功", at_sender=True)
     else:
         await bot.finish(ev, '参数格式错误, 请重试')
@@ -220,7 +230,10 @@ async def on_arena_schedule():
     bot = nonebot.get_bot()
     if not Inited:
         Init()
-    for user in binds["arena_bind"]:
+    binds_lock.acquire()
+    arena_bind = copy.deepcopy(binds["arena_bind"])
+    binds_lock.release()
+    for user in arena_bind:
         user = str(user)
         await asyncio.sleep(1.5)
         try:
@@ -260,10 +273,12 @@ async def leave_notice(session: NoticeSession):
     if not Inited:
         Init()
     uid = str(session.ctx['user_id'])
+    binds_lock.acquire()
     if not uid in binds["arena_bind"]:
         pass
     else:
         binds["arena_bind"].pop(uid)
         save_binds()
         pass
+    binds_lock.release()
     return
