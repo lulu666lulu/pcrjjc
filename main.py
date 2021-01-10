@@ -215,7 +215,7 @@ async def send_arena_sub_status(bot,ev):
             strList.append("关闭")
         await bot.send(ev,"".join(strList),at_sender=True)
 
-@sv.scheduled_job('cron', minute='*/1')
+@sv.scheduled_job('cron', minute='*/5')
 async def on_arena_schedule():
     global arena_ranks
     global grand_arena_ranks
