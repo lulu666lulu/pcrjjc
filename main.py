@@ -2,10 +2,10 @@
 #changed by lulu to another api 2021/1/7
 from os import path
 import json
-from hoshino import Service
-from hoshino.priv import *
+from hoshino import Service, priv
 import nonebot
 from hoshino import aiorequests
+from hoshino.typing import NoticeSession
 import asyncio
 from .queryapi import getprofile
 
@@ -166,17 +166,31 @@ async def enable_arena_sub(bot,ev):
         save_binds()
         await bot.send(ev,"启用公主竞技场订阅成功",at_sender=True)
 
-@sv.on_fullmatch('删除竞技场订阅')
+@sv.on_prefix('删除竞技场订阅')
 async def delete_arena_sub(bot,ev):
     if not Inited:
         Init()
-    uid = str(ev['user_id'])
-    if not uid in binds["arena_bind"]:
-        await bot.send(ev,"您还未绑定竞技场",at_sender=True)
+    if len(ev.message) == 1 and ev.message[0].type == 'text' and not ev.message[0].data['text']:
+        uid = str(ev['user_id'])
+        if not uid in binds["arena_bind"]:
+            await bot.finish(ev, "您还未绑定竞技场", at_sender=True)
+        else:
+            binds["arena_bind"].pop(uid)
+            save_binds()
+            await bot.send(ev, "删除竞技场订阅成功", at_sender=True)
+    elif ev.message[0].type == 'at':
+        if not priv.check_priv(ev, priv.SUPERUSER):
+            await bot.finish(ev, '删除他人订阅请联系维护', at_sender=True)
+        else:
+            uid = str(ev.message[0].data['qq'])
+            if not uid in binds["arena_bind"]:
+                await bot.finish(ev, "对方尚未绑定竞技场", at_sender=True)
+            else:
+                binds["arena_bind"].pop(uid)
+                save_binds()
+                await bot.send(ev, "删除竞技场订阅成功", at_sender=True)
     else:
-        binds["arena_bind"].pop(uid)
-        save_binds()
-        await bot.send(ev,"删除竞技场订阅成功",at_sender=True)
+        await bot.finish(ev, '参数格式错误, 请重试')
 
 @sv.on_fullmatch('竞技场订阅状态')
 async def send_arena_sub_status(bot,ev):
@@ -243,7 +257,7 @@ async def on_arena_schedule():
         except:
             sv.logger.info("对{id}的检查出错".format(id=binds["arena_bind"][user]["id"]))
 
-@sv1.on_notice('group_decrease.leave')
+@sv.on_notice('group_decrease.leave')
 async def leave_notice(session: NoticeSession):
     if not Inited:
         Init()
