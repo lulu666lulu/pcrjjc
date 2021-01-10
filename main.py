@@ -242,3 +242,16 @@ async def on_arena_schedule():
                         await asyncio.sleep(0.1)
         except:
             sv.logger.info("对{id}的检查出错".format(id=binds["arena_bind"][user]["id"]))
+
+@sv1.on_notice('group_decrease.leave')
+async def leave_notice(session: NoticeSession):
+    if not Inited:
+        Init()
+    uid = str(session.ctx['user_id'])
+    if not uid in binds["arena_bind"]:
+        pass
+    else:
+        binds["arena_bind"].pop(uid)
+        save_binds()
+        pass
+    return
