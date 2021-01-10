@@ -5,7 +5,7 @@ import json
 apiroot = 'https://help.tencentbot.top'
 
 def getprofile(viewer_id: int, interval: int = 1, full: bool = False) -> dict:
-    reqid = json.loads(equests.get(f'{apiroot}/enqueue?full={full}&target_viewer_id={viewer_id}').content.decode('utf8'))['reqeust_id']
+    reqid = json.loads(requests.get(f'{apiroot}/enqueue?full={full}&target_viewer_id={viewer_id}').content.decode('utf8'))['reqeust_id']
 
     if reqid is None:
         return "id err"
