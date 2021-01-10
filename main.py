@@ -224,7 +224,7 @@ async def on_arena_schedule():
         Init()
     for user in binds["arena_bind"]:
         user = str(user)
-        await asyncio.sleep(0.1)
+        await asyncio.sleep(1.5)
         try:
             res = getprofile(int(binds["arena_bind"][user]["id"]))
             res = res["user_info"]
@@ -240,7 +240,7 @@ async def on_arena_schedule():
                         msg = "[CQ:at,qq={uid}]您的竞技场排名发生变化：{origin_rank}->{new_rank}".format(uid=binds["arena_bind"][user]["uid"], origin_rank=str(origin_rank), new_rank=str(new_rank))
                         arena_ranks[user] = new_rank
                         await bot.send_group_msg(group_id=int(binds["arena_bind"][user]["gid"]),message=msg)
-                        await asyncio.sleep(0.1)
+                        await asyncio.sleep(1.5)
             if binds["arena_bind"][user]["grand_arena_on"]:
                 if not user in grand_arena_ranks:
                     grand_arena_ranks[user] = res["grand_arena_rank"]
@@ -253,7 +253,7 @@ async def on_arena_schedule():
                         msg = "[CQ:at,qq={uid}]您的公主竞技场排名发生变化：{origin_rank}->{new_rank}".format(uid=binds["arena_bind"][user]["uid"], origin_rank=str(origin_rank), new_rank=str(new_rank))
                         grand_arena_ranks[user] = new_rank
                         await bot.send_group_msg(group_id=int(binds["arena_bind"][user]["gid"]),message=msg)
-                        await asyncio.sleep(0.1)
+                        await asyncio.sleep(1.5)
         except:
             sv.logger.info("对{id}的检查出错".format(id=binds["arena_bind"][user]["id"]))
 
