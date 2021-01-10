@@ -7,6 +7,7 @@ import nonebot
 from hoshino.typing import NoticeSession
 import asyncio
 from .queryapi import getprofile
+import copy
 
 sv_help = '''
 [竞技场绑定 uid] 绑定竞技场排名变动推送（仅下降），默认双场均启用
@@ -220,7 +221,8 @@ async def on_arena_schedule():
     bot = nonebot.get_bot()
     if not Inited:
         Init()
-    for user in binds["arena_bind"]:
+    arena_bind = copy.deepcopy(binds["arena_bind"])
+    for user in arena_bind:
         user = str(user)
         await asyncio.sleep(1.5)
         try:
