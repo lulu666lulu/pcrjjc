@@ -4,7 +4,6 @@ from os import path
 import json
 from hoshino import Service, priv
 import nonebot
-from hoshino import aiorequests
 from hoshino.typing import NoticeSession
 import asyncio
 from .queryapi import getprofile
@@ -28,7 +27,6 @@ binds = {}
 arena_ranks = {}
 grand_arena_ranks ={}
 tr = None
-#api_key = "" #在这里填写API KEY
 
 @sv.on_fullmatch('jjc帮助', only_to_me=False)
 async def send_jjchelp(bot, ev):
