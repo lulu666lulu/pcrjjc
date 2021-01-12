@@ -92,7 +92,7 @@ async def on_query_arena(bot,ev):
         await bot.send(ev,"ID格式错误，请检查",at_sender=True)
         return
     try:
-        res = getprofile(int(id))
+        res = await getprofile(int(id))
         res = res["user_info"]
         '''if res["err_code"] == 403:
             sv.logger.info("您的API KEY错误或者被屏蔽，请尽快停止本插件")
@@ -226,7 +226,7 @@ async def on_arena_schedule():
         user = str(user)
         await asyncio.sleep(1.5)
         try:
-            res = getprofile(int(binds["arena_bind"][user]["id"]))
+            res = await getprofile(int(binds["arena_bind"][user]["id"]))
             res = res["user_info"]
             if binds["arena_bind"][user]["arena_on"]:
                 if not user in arena_ranks:

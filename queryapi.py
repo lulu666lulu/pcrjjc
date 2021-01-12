@@ -1,11 +1,11 @@
-import requests
+from hoshino.aiorequests import get
 import time
 import json
 
 apiroot = 'https://help.tencentbot.top'
 
-def getprofile(viewer_id: int, interval: int = 1, full: bool = False) -> dict:
-    reqid = json.loads(requests.get(f'{apiroot}/enqueue?full={full}&target_viewer_id={viewer_id}').content.decode('utf8'))['reqeust_id']
+async def getprofile(viewer_id: int, interval: int = 1, full: bool = False) -> dict:
+    reqid = json.loads((await (await get(f'{apiroot}/enqueue?full={full}&target_viewer_id={viewer_id}')).content).decode('utf8'))['reqeust_id']
 
     if reqid is None:
         return "id err"
