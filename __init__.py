@@ -256,8 +256,8 @@ async def on_arena_schedule():
                             await bot.send_group_msg(group_id=int(binds["arena_bind"][user]["gid"]),message=msg)
                             await asyncio.sleep(1.5)
             else:
-                del arena_ranks[user]
-                del grand_arena_ranks[user]
+                if user in arena_ranks: del arena_ranks[user]
+                if user in grand_arena_ranks: del grand_arena_ranks[user]
         except:
             sv.logger.info("对{id}的检查出错".format(id=binds["arena_bind"][user]["id"]))
 

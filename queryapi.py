@@ -14,7 +14,7 @@ def isInPeriod(viewer_id: int) -> bool:
         return True
     return False
 
-async def getprofile(viewer_id: int, interval: int = 1, full: bool = False, reqid=None) -> dict:
+async def getprofile(viewer_id: int, interval: int = 1, full: bool = False) -> dict:
     reqid:int
     if not viewer_id in check_time_dict or not isInPeriod(viewer_id):
         reqid = json.loads((await (await get(f'{apiroot}/enqueue?full={full}&target_viewer_id={viewer_id}')).content).decode('utf8'))['reqeust_id']
