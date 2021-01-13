@@ -14,14 +14,14 @@ def isInPeriod(viewer_id: int) -> bool:
         return True
     return False
 
-async def getprofile(viewer_id: int, interval: int = 1, full: bool = False, reqid=None) -> dict:
+async def getprofile(viewer_id: int, interval: int = 1, full: bool = False) -> dict:
     reqid:int
     if not viewer_id in check_time_dict or not isInPeriod(viewer_id):
         reqid = json.loads((await (await get(f'{apiroot}/enqueue?full={full}&target_viewer_id={viewer_id}')).content).decode('utf8'))['reqeust_id']
         if reqid is None:
             return "id err"
         check_time_dict[viewer_id] = f"{reqid} {time.time()+60}" #秒的格式 # id 过期时间
-
+    reqid = check_time_dict[viewer_id].split()[0]
     while True:
         query = json.loads(requests.get(f'{apiroot}/query?request_id={reqid}').content.decode('utf8'))
         status = query['status']
