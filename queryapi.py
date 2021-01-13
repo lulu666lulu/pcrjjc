@@ -26,6 +26,7 @@ async def getprofile(viewer_id: int, interval: int = 1, full: bool = False) -> d
         query = json.loads(requests.get(f'{apiroot}/query?request_id={reqid}').content.decode('utf8'))
         status = query['status']
         if status == 'done':
+            del check_time_dict[viewer_id]
             return query['data']
         elif status == 'queue':
             time.sleep(interval)
