@@ -11,7 +11,7 @@ async def getprofile(viewer_id: int, interval: int = 1, full: bool = False) -> d
         return "id err"
 
     while True:
-        query = json.loads(requests.get(f'{apiroot}/query?request_id={reqid}').content.decode('utf8'))
+        query = json.loads((await (await get(f'{apiroot}/query?request_id={reqid}')).content).decode('utf8'))
         status = query['status']
         if status == 'done':
             return query['data']
